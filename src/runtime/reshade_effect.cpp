@@ -21,6 +21,7 @@
 #include "vk/initializers.hpp"
 #include "vk/macros.hpp"
 #include "vk/sampler.hpp"
+#include "reshade_buffer_metadata.hpp"
 #include "reshade_uniforms.hpp"
 
 vkShade::ReshadeEffect::ReshadeEffect(VulkanDevice& device, SwapchainInfo swapchainInfo, std::filesystem::path effectPath)
@@ -267,7 +268,8 @@ bool vkShade::ReshadeEffect::compile(std::filesystem::path filePath)
 	pp.add_macro_definition("BUFFER_HEIGHT", std::to_string(m_swapchainInfo.extent.height));
 	pp.add_macro_definition("BUFFER_RCP_WIDTH", "(1.0 / BUFFER_WIDTH)");
 	pp.add_macro_definition("BUFFER_RCP_HEIGHT", "(1.0 / BUFFER_HEIGHT)");
-    pp.add_macro_definition("BUFFER_COLOR_BIT_DEPTH", std::to_string(format_bit_depth(m_swapchainInfo.format)));
+    pp.add_macro_definition("BUFFER_COLOR_BIT_DEPTH",
+                            std::to_string(get_reshade_buffer_color_bit_depth(m_swapchainInfo.format)));
     pp.add_macro_definition("BUFFER_COLOR_SPACE", std::to_string(convert_color_space(m_swapchainInfo.colorSpace)));
 
     // Add include paths
@@ -450,30 +452,6 @@ uint32_t vkShade::ReshadeEffect::convert_color_space(VkColorSpaceKHR colorSpace)
         case VK_COLOR_SPACE_HDR10_ST2084_EXT:           return 3;
         case VK_COLOR_SPACE_HDR10_HLG_EXT:              return 4;
         default:                                        return 0;
-    }
-}
-
-uint32_t vkShade::ReshadeEffect::format_bit_depth(VkFormat format)
-{
-    switch (format)
-    {
-        case VK_FORMAT_R8G8B8A8_UNORM:
-        case VK_FORMAT_R8G8B8A8_SRGB:
-        case VK_FORMAT_B8G8R8A8_UNORM:
-        case VK_FORMAT_B8G8R8A8_SRGB:
-            return 8;
-
-        case VK_FORMAT_A2R10G10B10_UNORM_PACK32:
-        case VK_FORMAT_A2B10G10R10_UNORM_PACK32:
-            return 10;
-
-        case VK_FORMAT_R16G16B16A16_UNORM:
-        case VK_FORMAT_R16G16B16A16_SFLOAT:
-            return 16;
-
-        default:
-            Logger::warn("Unhandled swapchain format. Please report this issue.");
-            return 8;
     }
 }
 

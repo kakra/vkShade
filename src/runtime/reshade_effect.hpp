@@ -138,6 +138,5 @@ namespace vkShade
         static Uniform::UiType     convert_uniform_ui_type(const std::string& type);
 
         static uint32_t convert_color_space(VkColorSpaceKHR colorSpace);
-        static uint32_t format_bit_depth(VkFormat format);
     };
 } // namespace vkShade

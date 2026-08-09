@@ -18,6 +18,7 @@
 #include "fonts/meslo_lgs_regular.hpp"
 
 vkShade::GuiManager::GuiManager(VulkanDevice deviceContext, VkFormat swapchainFormat)
+    : m_mainWindow(deviceContext.imageTracker)
 {
     m_device = deviceContext.handle;
 

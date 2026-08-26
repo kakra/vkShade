@@ -1,6 +1,8 @@
 libplatform_source = [
+  'clipboard.cpp',
   'file_watcher.cpp',
   'linux/wayland_client_context.cpp',
+  'linux/xcb_clipboard.cpp',
 ]
 
 libplatform_library = static_library(
@@ -9,6 +11,7 @@ libplatform_library = static_library(
   dependencies : [
     spdlog,
     wayland_client,
+    xcb,
   ],
   include_directories : vkShade_include_path
 )

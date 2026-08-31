@@ -268,6 +268,8 @@ bool vkShade::ReshadeEffect::compile(std::filesystem::path filePath)
 	pp.add_macro_definition("BUFFER_HEIGHT", std::to_string(m_swapchainInfo.extent.height));
 	pp.add_macro_definition("BUFFER_RCP_WIDTH", "(1.0 / BUFFER_WIDTH)");
 	pp.add_macro_definition("BUFFER_RCP_HEIGHT", "(1.0 / BUFFER_HEIGHT)");
+    pp.add_macro_definition("BUFFER_COLOR_FORMAT",
+                            std::to_string(get_reshade_buffer_color_format(m_swapchainInfo.format)));
     pp.add_macro_definition("BUFFER_COLOR_BIT_DEPTH",
                             std::to_string(get_reshade_buffer_color_bit_depth(m_swapchainInfo.format)));
     pp.add_macro_definition("BUFFER_COLOR_SPACE", std::to_string(convert_color_space(m_swapchainInfo.colorSpace)));

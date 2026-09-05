@@ -33,6 +33,7 @@ libinput_source = [
   'sdl_module.cpp',
   'virtual_mouse_cursor.cpp',
   'wayland_callbacks.cpp',
+  'xinput_raw_motion.cpp',
   wayland_protocol_source,
 ]
 

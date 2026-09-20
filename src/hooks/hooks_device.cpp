@@ -24,7 +24,9 @@ VK_LAYER_EXPORT VkResult VKAPI_CALL vkShade_CreateDevice(
     auto& thisInstance = get_instance_from_handle(physicalDevice);
 
     // Query device properties
-    VkPhysicalDeviceProperties2 properties {};
+    VkPhysicalDeviceProperties2 properties {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+    };
     thisInstance.dispatch.GetPhysicalDeviceProperties2(physicalDevice, &properties);
 
     vkShade::Logger::info("Initializing device: {} (Vulkan {}.{}.{})",

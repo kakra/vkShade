@@ -33,16 +33,16 @@ See the [documentation](https://ralgar.github.io/vkShade) for more information.
   <em>vkShade overlay running in-game (click to enlarge)</em>
 </p>
 
-
 ## Project Status
 
 <!-- --8<-- [start:project-status] -->
 
-vkShade is currently in the **PRE-ALPHA** phase of development. The
- core shader runtime and preset system are functional and increasingly
- feature-complete, while the GUI and other user-facing components are still
- under active development. Expect bugs, incomplete features, and breaking
- changes as the project continues to mature.
+vkShade is currently in the **ALPHA** phase of development. The core shader
+ runtime, preset system, and GUI are all functional and the project is mostly
+ feature-complete at the core level. That said, expect rough edges: there may
+ still be compatibility issues with some games and shaders, input handling
+ problems, UX quirks, and general bugs. Breaking changes are still possible
+ as the project continues to mature.
 
 <!-- --8<-- [end:project-status] -->
 

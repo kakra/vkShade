@@ -12,7 +12,6 @@ See also [Limitations](#limitations).
 - [x] Configuration system with ReShade-like presets and hot-reloading
 - [x] Interactive GUI overlay with keyboard and mouse support
 - [x] Cross-platform input (Wayland, Xlib, XCB)
-- [x] Modern C++ RAII wrappers around the Vulkan C API
 
 ## Limitations
 
@@ -25,31 +24,14 @@ Some ReShade effects and preset features do not work properly yet. For example:
 
 ## Roadmap
 
-### Near-term (v0.1.x)
+### Near-term (v0.2.x+)
 
-- [x] Chain together multiple effects
-- [x] Configuration system
-    - [x] Application-level config file
-    - [x] Per-game effect presets using ReShade's INI format
-    - [x] Hot-reload config/preset files on changes
-- [x] GUI overlay
-    - [x] Browse, apply, and re-order effects
-    - [x] Save and reload preset
-    - [ ] Uniform enumeration and adjustment (in-progress)
-- [x] ReShade FX integration
-    - [x] Basic ReShade FX support
-    - [x] Full support for ReShade's time-based runtime uniforms
-    - [x] Stub support for ReShade's other runtime uniforms
-    - [x] Image and sampler reflection
-    - [x] Support for effects with multiple passes
-    - [x] Pipeline state reflection (stencil and blending)
-- [ ] Various fixes and improvements
-
-### Mid-term (v0.2.x+)
-
-- [ ] Support for effects with multiple techniques
-- [ ] Full support for ReShade's input-based runtime uniforms
-- [ ] Full support for ReShade's overlay-based runtime uniforms
+- [ ] Improve input handling and add capture support
+- [ ] Improve ReShade FX image compatbility
+- [ ] Support forced HDR presentation (for reverse tonemapping shaders)
+- [ ] Support effects with multiple techniques
+- [ ] Support ReShade's input runtime uniforms
+- [ ] Support ReShade's overlay runtime uniforms
 - [ ] Hot-reloadable effects
 - [ ] Depth buffer access
 

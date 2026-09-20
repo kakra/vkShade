@@ -10,6 +10,7 @@
 #include "core/logger.hpp"
 #include "hooks/hooks.hpp"
 #include "input/input_events.hpp"
+#include "input/input_manager.hpp"
 #include "windows/main_window.hpp"
 #include "vk/macros.hpp"
 #include "gui_style.hpp"
@@ -18,7 +19,8 @@
 #include "fonts/meslo_lgs_regular.hpp"
 
 vkShade::GuiManager::GuiManager(VulkanDevice deviceContext, VkFormat swapchainFormat)
-    : m_clipboard(Platform::Clipboard::create())
+    : m_clipboard(Platform::Clipboard::create(
+          Locator<InputManager>::get().get_wayland_client_state()))
 {
     m_device = deviceContext.handle;
 
@@ -273,6 +275,9 @@ void vkShade::GuiManager::setup_dockspace()
 
 void vkShade::GuiManager::update(float deltaTime, VkExtent2D swapchainExtent)
 {
+    if (m_clipboard)
+        m_clipboard->update();
+
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize = ImVec2((float)swapchainExtent.width, (float)swapchainExtent.height);
     io.DeltaTime = deltaTime;

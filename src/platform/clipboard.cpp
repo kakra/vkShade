@@ -1,8 +1,10 @@
 #include "clipboard.hpp"
 
+#include <utility>
+
 #if defined(__linux__)
+    #include "linux/wayland_clipboard.hpp"
     #include "linux/xcb_clipboard.hpp"
-    using ClipboardImpl = vkShade::Platform::XcbClipboard;
 #else
     #error "Unsupported platform"
 #endif
@@ -11,18 +13,27 @@
 
 namespace vkShade::Platform
 {
-    std::unique_ptr<Clipboard> Clipboard::create()
+    std::unique_ptr<Clipboard> Clipboard::create(
+        std::shared_ptr<WaylandClientState> waylandState)
     {
-        auto clipboard = std::make_unique<ClipboardImpl>();
-        if (!clipboard->is_available())
+        if (waylandState)
         {
-            // TODO: Add a native Wayland data-device provider for sessions
-            // without an X11/Xwayland DISPLAY.
-            Logger::debug("System clipboard is unavailable");
-            return nullptr;
+            auto clipboard = std::make_unique<WaylandClipboard>(std::move(waylandState));
+            if (clipboard->is_available())
+            {
+                Logger::debug("Initialized Wayland system clipboard integration");
+                return clipboard;
+            }
         }
 
-        Logger::debug("Initialized X11 system clipboard integration");
-        return clipboard;
+        auto clipboard = std::make_unique<XcbClipboard>();
+        if (clipboard->is_available())
+        {
+            Logger::debug("Initialized X11 system clipboard integration");
+            return clipboard;
+        }
+
+        Logger::debug("System clipboard is unavailable");
+        return nullptr;
     }
 } // namespace vkShade::Platform

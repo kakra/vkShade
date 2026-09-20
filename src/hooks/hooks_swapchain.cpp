@@ -88,6 +88,10 @@ VK_LAYER_EXPORT VkResult VKAPI_CALL vkShade_QueuePresentKHR(VkQueue queue, const
     auto& eventBus = vkShade::Locator<vkShade::EventBus>::get();
 
     // Update managers
+    input.set_pointer_bounds({
+        static_cast<float>(runtime.extent().width > 0 ? runtime.extent().width - 1 : 0),
+        static_cast<float>(runtime.extent().height > 0 ? runtime.extent().height - 1 : 0),
+    });
     configManager.update();
     eventBus.update();
     input.update();

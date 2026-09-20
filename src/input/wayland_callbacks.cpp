@@ -73,7 +73,7 @@ const wl_registry_listener reg_listener = {
 void pointer_enter_handler(void* data, wl_pointer* pointer, uint32_t serial,
                           wl_surface* surface, wl_fixed_t x, wl_fixed_t y) {
     auto* manager = static_cast<vkShade::InputBackendWayland*>(data);
-    manager->on_pointer_enter(surface, x, y);
+    manager->on_pointer_enter(serial, surface, x, y);
 }
 
 void pointer_leave_handler(void* data, wl_pointer* pointer, uint32_t serial,

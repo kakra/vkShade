@@ -46,6 +46,7 @@ namespace vkShade
         {
             return {};
         }
+        virtual void set_pointer_bounds(glm::vec2) {}
 
         void capture_mouse(bool capture);
 

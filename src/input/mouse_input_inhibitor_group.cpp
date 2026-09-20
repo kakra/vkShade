@@ -38,4 +38,24 @@ namespace vkShade
 
         m_activeInhibitors.clear();
     }
+
+    bool MouseInputInhibitorGroup::is_ready_for_capture() const
+    {
+        for (const MouseInputInhibitor* inhibitor : m_activeInhibitors)
+        {
+            if (!inhibitor->is_ready_for_capture())
+                return false;
+        }
+        return true;
+    }
+
+    bool MouseInputInhibitorGroup::permits_pointer_constraint() const
+    {
+        for (const MouseInputInhibitor* inhibitor : m_activeInhibitors)
+        {
+            if (inhibitor->permits_pointer_constraint())
+                return true;
+        }
+        return false;
+    }
 } // namespace vkShade

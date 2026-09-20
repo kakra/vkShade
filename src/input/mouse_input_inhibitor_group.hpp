@@ -15,6 +15,8 @@ namespace vkShade
         bool inhibit() override;
         void reconcile() override;
         void restore() override;
+        bool is_ready_for_capture() const override;
+        bool permits_pointer_constraint() const override;
 
     private:
         std::vector<std::unique_ptr<MouseInputInhibitor>> m_inhibitors;

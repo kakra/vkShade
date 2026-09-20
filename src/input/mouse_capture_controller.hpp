@@ -27,6 +27,7 @@ namespace vkShade
         virtual MouseCaptureAttempt acquire() = 0;
         virtual void release() = 0;
         virtual MouseCaptureStatus get_status() const = 0;
+        virtual bool requires_pointer_constraint_permission() const { return false; }
     };
 
     class MouseInputInhibitor
@@ -37,6 +38,8 @@ namespace vkShade
         virtual bool inhibit() = 0;
         virtual void reconcile() = 0;
         virtual void restore() = 0;
+        virtual bool is_ready_for_capture() const { return true; }
+        virtual bool permits_pointer_constraint() const { return false; }
     };
 
     class MouseCaptureController

@@ -238,6 +238,9 @@ namespace
                 }
             }
 
+            m_pointerConstraintReleased = getRelativeMouseMode
+                && getRelativeMouseMode() == 0;
+
             if (m_eventFilter.install())
             {
                 if (flushEvents)
@@ -267,6 +270,8 @@ namespace
                     vkShade::Logger::debug(
                         "[InputManager] Re-disabled SDL relative mouse mode");
             }
+            m_pointerConstraintReleased = getRelativeMouseMode
+                && getRelativeMouseMode() == 0;
 
             m_eventFilter.reconcile();
         }
@@ -285,12 +290,19 @@ namespace
                     vkShade::Logger::warn("[InputManager] SDL_SetRelativeMouseMode(true) failed");
             }
             m_restoreRelativeMode = false;
+            m_pointerConstraintReleased = false;
+        }
+
+        bool permits_pointer_constraint() const override
+        {
+            return m_pointerConstraintReleased;
         }
 
     private:
         vkShade::SdlModule m_module;
         SDLEventFilter<int> m_eventFilter;
         bool m_restoreRelativeMode {false};
+        bool m_pointerConstraintReleased {false};
         std::chrono::steady_clock::time_point m_nextReconcile {};
     };
 
@@ -342,6 +354,7 @@ namespace
                 m_state->requested = true;
                 generation = ++m_state->generation;
                 m_state->reconcilePending = true;
+                m_state->pointerConstraintReleased = false;
             }
 
             if (schedule(TaskAction::Inhibit, generation, {}))
@@ -363,6 +376,7 @@ namespace
 
                 generation = m_state->generation;
                 m_state->reconcilePending = true;
+                m_state->pointerConstraintReleased = false;
             }
 
             if (schedule(TaskAction::Inhibit, generation, {}))
@@ -382,6 +396,7 @@ namespace
                 m_state->requested = false;
                 generation = ++m_state->generation;
                 m_state->reconcilePending = false;
+                m_state->pointerConstraintReleased = false;
                 windowIds.assign(
                     m_state->restoreWindowIds.begin(), m_state->restoreWindowIds.end());
             }
@@ -392,6 +407,18 @@ namespace
                 vkShade::Logger::warn(
                     "[InputManager] Could not schedule SDL3 relative mouse mode restore");
             }
+        }
+
+        bool is_ready_for_capture() const
+        {
+            const std::scoped_lock lock(m_state->mutex);
+            return !m_state->reconcilePending;
+        }
+
+        bool permits_pointer_constraint() const
+        {
+            const std::scoped_lock lock(m_state->mutex);
+            return !m_state->reconcilePending && m_state->pointerConstraintReleased;
         }
 
     private:
@@ -410,6 +437,7 @@ namespace
             uint64_t generation {0};
             bool requested {false};
             bool reconcilePending {false};
+            bool pointerConstraintReleased {false};
         };
 
         enum class TaskAction
@@ -468,6 +496,7 @@ namespace
             std::vector<SDLWindowId> changedWindowIds;
             int windowCount = 0;
             SDLWindow** windows = task.state->api->getWindows(&windowCount);
+            bool pointerConstraintReleased = windows != nullptr;
             for (int index = 0; windows && index < windowCount; ++index)
             {
                 SDLWindow* window = windows[index];
@@ -477,8 +506,11 @@ namespace
                 if (task.state->api->setRelativeMouseMode(window, false))
                     changedWindowIds.push_back(task.state->api->getWindowId(window));
                 else
+                {
+                    pointerConstraintReleased = false;
                     vkShade::Logger::warn(
                         "[InputManager] SDL_SetWindowRelativeMouseMode(false) failed");
+                }
             }
             task.state->api->free(windows);
 
@@ -496,7 +528,10 @@ namespace
                 }
 
                 if (task.state->generation == task.generation)
+                {
                     task.state->reconcilePending = false;
+                    task.state->pointerConstraintReleased = pointerConstraintReleased;
+                }
             }
 
             if (restoreImmediately)
@@ -586,6 +621,16 @@ namespace
                 m_relativeMode.restore();
         }
 
+        bool is_ready_for_capture() const override
+        {
+            return !m_api->is_available() || m_relativeMode.is_ready_for_capture();
+        }
+
+        bool permits_pointer_constraint() const override
+        {
+            return m_api->is_available() && m_relativeMode.permits_pointer_constraint();
+        }
+
     private:
         std::shared_ptr<SDL3Api> m_api;
         SDLEventFilter<bool> m_eventFilter;
@@ -618,6 +663,11 @@ namespace
         {
             restore_raw_input();
             restore_cursor_clip();
+        }
+
+        bool permits_pointer_constraint() const override
+        {
+            return m_cursorClipReleased;
         }
 
     private:

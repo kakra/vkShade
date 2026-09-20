@@ -56,6 +56,19 @@ namespace vkShade
             m_inhibitor.reconcile();
         }
 
+        if (m_applicationInhibited && !m_inhibitor.is_ready_for_capture())
+        {
+            m_status = MouseCaptureStatus::Pending;
+            return;
+        }
+
+        if (m_backend.requires_pointer_constraint_permission()
+            && (!m_applicationInhibited || !m_inhibitor.permits_pointer_constraint()))
+        {
+            m_status = MouseCaptureStatus::Unavailable;
+            return;
+        }
+
         m_status = m_backend.get_status();
         if (m_status != MouseCaptureStatus::Inactive)
             return;

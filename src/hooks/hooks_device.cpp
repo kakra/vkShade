@@ -201,7 +201,12 @@ VK_LAYER_EXPORT VkResult VKAPI_CALL vkShade_CreateDevice(
         VkResult vmaResult = vmaCreateAllocator(&allocatorInfo, &thisDevice.allocator);
         if (vmaResult != VK_SUCCESS)
         {
-            vkShade::Logger::error("Failed to create memory allocator: {}", magic_enum::enum_name(result));
+            vkShade::Logger::error("Failed to create memory allocator: {}", magic_enum::enum_name(vmaResult));
+
+            // The application never receives the device, so release everything created for it so far.
+            thisDevice.dispatch.DestroyCommandPool(thisDevice.handle, thisDevice.commandPool, nullptr);
+            thisDevice.dispatch.DestroyDevice(thisDevice.handle, pAllocator);
+            *pDevice = VK_NULL_HANDLE;
             return VK_ERROR_INITIALIZATION_FAILED;
         }
     }
